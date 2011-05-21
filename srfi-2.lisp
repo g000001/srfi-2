@@ -135,42 +135,43 @@
 
 (cl:in-package :srfi-2-internal)
 
+(defmacro ct-error-syntax (msg &rest args)
+  `(error "~@{~S~^ ~}" ,msg ,@args))
+
 (defmacro AND-LET* (claws &body body)
   (let* ((new-vars '()) (result (cons 'and '())) (growth-point result))
 
-			; We need a way to report a syntax error
-			; the following is how Gambit compiler does it...
-    (macrolet ((ct-error-syntax (msg &rest args)
-                 `(error ,msg ,@args)))
-      (flet ((andjoin! (clause)
-               (let ((prev-point growth-point) (clause-cell (cons clause '())))
-                 (setf (cdr growth-point) clause-cell)
-                 (setq growth-point clause-cell))))
-        (when (not (listp claws))
-          (ct-error-syntax "bindings must be a list " claws))
-        (mapc
-         (lambda (claw)
-           (cond
-             ((symbolp claw)	; BOUND-VARIABLE form
-              (andjoin! claw))
-             ((and (consp claw)
-                   (null (cdr claw))) ; (EXPRESSION) form
-              (andjoin! (car claw)))
-						; (VARIABLE EXPRESSION) form
-             ((and (consp claw) (symbolp (car claw))
-                   (consp (cdr claw)) (null (cddr claw)))
-              (let* ((var (car claw)) (var-cell (cons var '())))
-                (when (member var new-vars)
-                  (ct-error-syntax "duplicate variable " var " in the bindings"))
-                (setq new-vars (cons var new-vars))
-                (setf (cdr growth-point)
-                      `((LET (,claw) (AND . ,var-cell))))
-                (setq growth-point var-cell)))
-             (T
-              (ct-error-syntax "An ill-formed binding in a syntactic form land* "
-                               claw))
-             ))
-         claws)
-        (if (not (null body))
-            (andjoin! `(progn ,@body)))
-        result))))
+    ;; We need a way to report a syntax error
+    ;; the following is how Gambit compiler does it...
+    (flet ((andjoin! (clause)
+             (let ((prev-point growth-point) (clause-cell (cons clause '())))
+               (setf (cdr growth-point) clause-cell)
+               (setq growth-point clause-cell))))
+      (when (not (listp claws))
+        (ct-error-syntax "bindings must be a list " claws))
+      (mapc
+       (lambda (claw)
+         (cond
+           ((symbolp claw)	; BOUND-VARIABLE form
+            (andjoin! claw))
+           ((and (consp claw)
+                 (null (cdr claw))) ; (EXPRESSION) form
+            (andjoin! (car claw)))
+                                        ; (VARIABLE EXPRESSION) form
+           ((and (consp claw) (symbolp (car claw))
+                 (consp (cdr claw)) (null (cddr claw)))
+            (let* ((var (car claw)) (var-cell (cons var '())))
+              (when (member var new-vars)
+                (ct-error-syntax "duplicate variable " var " in the bindings"))
+              (setq new-vars (cons var new-vars))
+              (setf (cdr growth-point)
+                    `((LET (,claw) (AND . ,var-cell))))
+              (setq growth-point var-cell)))
+           (T
+            (ct-error-syntax "An ill-formed binding in a syntactic form land* "
+                             claw))
+           ))
+       claws)
+      (if (not (null body))
+          (andjoin! `(progn ,@body)))
+      result)))
