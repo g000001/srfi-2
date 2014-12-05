@@ -144,7 +144,8 @@
     ;; We need a way to report a syntax error
     ;; the following is how Gambit compiler does it...
     (flet ((andjoin! (clause)
-             (let ((prev-point growth-point) (clause-cell (cons clause '())))
+             (cl:let ((prev-point growth-point) (clause-cell (cons clause '())))
+               (declare (ignore prev-point))
                (setf (cdr growth-point) clause-cell)
                (setq growth-point clause-cell))))
       (when (not (listp claws))
