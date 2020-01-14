@@ -1,13 +1,13 @@
-(cl:in-package :srfi-2-internal)
+(cl:in-package "https://github.com/g000001/srfi-2#internals")
 
-(def-suite srfi-2)
+(5am:def-suite srfi-2)
 
-(in-suite srfi-2)
+(5am:in-suite srfi-2)
 
 (defmacro expect (a b)
-  `(is (equal ,a ,b)))
+  `(5am:is (equal ,a ,b)))
 
-(test and-let*
+(5am:test and-let*
   (expect  (and-let* () 1) 1)
   (expect  (and-let* () 1 2) 2)
   (expect  (and-let* () ) T)
@@ -34,7 +34,7 @@
   (expect (let ((x 1)) (and-let* (((plusp x))) )) T)
   (expect (let ((x 0)) (and-let* (((plusp x))) (+ x 1))) nil)
   (expect (let ((x 1)) (and-let* (((plusp x)) (x (+ x 1))) (+ x 1)))  3)
-  (signals
+  (5am:signals
       (error "Execution of a form compiled with errors.")
     (let ((x 1)) (and-let* (((plusp x)) (x (+ x 1)) (x (+ x 1))) (+ x 1))) )
   (expect (let ((x 1)) (and-let* (x ((plusp x))) (+ x 1))) 2)

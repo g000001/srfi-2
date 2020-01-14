@@ -133,7 +133,7 @@
 ;
 ; $Id: vland-gambit.scm,v 1.1 1998/12/28 23:54:29 srfimgr Exp $
 
-(cl:in-package :srfi-2-internal)
+(cl:in-package "https://github.com/g000001/srfi-2#internals")
 
 (defmacro ct-error-syntax (msg &rest args)
   `(error "~@{~S~^ ~}" ,msg ,@args))

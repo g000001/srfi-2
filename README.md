@@ -1,4 +1,7 @@
-* SRFI-2: AND-LET*
+# SRFI-2 for CL: AND-LET*
+
+* https://srfi.schemers.org/srfi-2/
+* License: Unlicense
 
 Copyright (C) Oleg Kiselyov (1998). All Rights Reserved.
 
