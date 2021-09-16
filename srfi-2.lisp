@@ -162,8 +162,6 @@
            ((and (consp claw) (symbolp (car claw))
                  (consp (cdr claw)) (null (cddr claw)))
             (let* ((var (car claw)) (var-cell (cons var '())))
-              (when (member var new-vars)
-                (ct-error-syntax "duplicate variable " var " in the bindings"))
               (setq new-vars (cons var new-vars))
               (setf (cdr growth-point)
                     `((LET (,claw) (AND . ,var-cell))))
